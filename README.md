@@ -83,7 +83,14 @@ The same tested binary is also kept in `dist/` in the repository.
 4. Reboot the Mini.
 5. Test one controller, then two controllers in a simultaneous two-player Canoe game.
 
-`install.sh` makes a timestamped backup of the Canoe wrapper before changing it. It preserves any existing options or prior fixes in that wrapper.
+`install.sh` makes a timestamped backup of the Canoe wrapper before changing it. It preserves any existing options or prior fixes in that wrapper. It recognizes both `exec canoe-shvc ...` and `exec /usr/bin/canoe-shvc ...` launcher formats.
+
+Before installing, you can safely validate the detected Canoe launch line without
+changing any files:
+
+```sh
+sh /tmp/install.sh --dry-run
+```
 
 ## Verify on the Mini
 
