@@ -7,6 +7,7 @@ LAUNCH_PATTERN='^[[:space:]]*exec[[:space:]]+([^[:space:]]*/)?canoe-shvc([[:spac
 STAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP=/var/lib/hakchi/clover-canoe-shvc.before-analog-$STAMP
 DRY_RUN=0
+ALREADY_CONFIGURED=0
 
 case "${1:-}" in
     '') ;;
@@ -27,8 +28,11 @@ esac
 }
 
 if grep -q 'libcanoe_analog_state.so' "$WRAPPER"; then
-    echo 'Analog library is already configured.'
-    exit 0
+    ALREADY_CONFIGURED=1
+    if [ "$DRY_RUN" -eq 0 ]; then
+        echo 'Analog library is already configured.'
+        exit 0
+    fi
 fi
 
 # Add the export immediately before Canoe's final exec. The matching exec must
@@ -50,7 +54,11 @@ esac
 if [ "$DRY_RUN" -eq 1 ]; then
     echo "Dry run passed. Found Canoe launch line:"
     grep -nE "$LAUNCH_PATTERN" "$WRAPPER"
-    echo "Would back up $WRAPPER to $BACKUP and add LD_PRELOAD immediately before that line."
+    if [ "$ALREADY_CONFIGURED" -eq 1 ]; then
+        echo "The analog library is already configured; no changes would be made."
+    else
+        echo "Would back up $WRAPPER to $BACKUP and add LD_PRELOAD immediately before that line."
+    fi
     exit 0
 fi
 
